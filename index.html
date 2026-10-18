@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="de" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bosankic Brüder - KI, Sport & Tier-Abenteuer</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        canvas {
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+        #powerCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 60;
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-white font-sans antialiased pb-24 md:pb-8">
+
+    <!-- SPEZIELLES POWER-UP ANIMATIONS-CANVAS (FÜR HASEN, SPORTAUTO, MOTOR, FLUGZEUG) -->
+    <canvas id="powerCanvas"></canvas>
+
+    <!-- TRAUM OVERLAY MODAL -->
+    <div id="dreamModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden transition-all duration-300">
+        <div class="bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-cyan-500 rounded-3xl p-6 max-w-sm w-full text-center space-y-4 shadow-2xl relative">
+            <div id="modalEmoji" class="text-6xl animate-pulse">🚀</div>
+            <h3 id="modalTitle" class="text-2xl font-black text-cyan-400">Power Up!</h3>
+            <p id="modalDesc" class="text-sm text-slate-200 leading-relaxed font-medium">Mit KI Coden erreichst du alles!</p>
+            <div class="bg-cyan-950/80 border border-cyan-700/50 p-3 rounded-2xl text-xs text-cyan-200 font-semibold">
+                💡 Merk dir: Wer heute KI & Programmieren lernt, kann sich später alle Wünsche & Träume erfüllen!
+            </div>
+            <button onclick="closeModal()" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-2.5 rounded-2xl shadow-lg active:scale-95 transition">
+                Super, ich will KI lernen! 🌟
+            </button>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-gradient-to-tr from-cyan-500 to-blue-600 text-white font-black px-3 py-1.5 rounded-xl shadow-lg text-lg">
+                    B4
+                </div>
+                <div>
+                    <h1 class="text-base font-bold leading-tight bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                        Bosankic Brüder
+                    </h1>
+                    <p class="text-[10px] text-slate-400 font-medium">Petar • Damijan • Samuel • Benjamin</p>
+                </div>
+            </div>
+
+            <button id="muteBtn" onclick="toggleMute()" class="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-full border border-slate-700 text-xs transition">
+                <i id="muteIcon" class="fas fa-volume-mute text-red-400"></i>
+                <span id="muteText" class="font-semibold text-slate-400">Ton: AUS</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-6 space-y-12">
+
+        <!-- HERO SECTION -->
+        <section class="bg-gradient-to-b from-slate-800/80 to-slate-900/80 rounded-3xl p-4 sm:p-6 border border-slate-700/50 shadow-2xl">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                <div class="md:col-span-5 flex justify-center">
+                    <img src="bosankic.JPG" alt="Die Bosankic Brüder" class="rounded-2xl shadow-xl w-full object-cover aspect-[4/3] border-2 border-slate-700" onerror="this.src='https://images.unsplash.com/photo-1543807535-eceef0bc6599?auto=format&fit=crop&w=800&q=80'">
+                </div>
+                <div class="md:col-span-7 space-y-4 text-center md:text-left">
+                    <span class="bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 text-xs font-semibold px-3 py-1 rounded-full inline-block">
+                        🚀 Die Super-Brüder Webseite
+                    </span>
+                    <h2 class="text-2xl sm:text-4xl font-extrabold text-white">
+                        Willkommen in der Welt von <span class="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Sport, Tieren & KI!</span>
+                    </h2>
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                        Entdecke interaktive Spiele, höre Tiersounds und lerne, wie Künstliche Intelligenz dir hilft, deine Träume zu erfüllen!
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4 BRÜDER -->
+        <section class="space-y-4">
+            <h3 class="text-xl font-bold text-slate-200 flex items-center space-x-2">
+                <i class="fas fa-users text-cyan-400"></i>
+                <span>Die 4 Helden (Klicke Power Up!)</span>
+            </h3>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <!-- Petar: Sportauto -->
+                <div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-4 text-center space-y-2">
+                    <div class="w-12 h-12 mx-auto bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center font-bold text-lg border border-blue-500/30">P</div>
+                    <h4 class="font-bold text-white">Petar</h4>
+                    <p class="text-xs text-slate-400">KI-Kopf & Sportler</p>
+                    <button onclick="triggerBroEffect('Petar')" class="w-full bg-blue-600/30 hover:bg-blue-600 text-blue-300 hover:text-white text-xs py-1.5 rounded-xl border border-blue-500/40 font-bold active:scale-95 transition">Sportauto 🏎️</button>
+                </div>
+                <!-- Damijan: Motor -->
+                <div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-4 text-center space-y-2">
+                    <div class="w-12 h-12 mx-auto bg-cyan-500/20 text-cyan-400 rounded-full flex items-center justify-center font-bold text-lg border border-cyan-500/30">D</div>
+                    <h4 class="font-bold text-white">Damijan</h4>
+                    <p class="text-xs text-slate-400">Action & Ball-Profi</p>
+                    <button onclick="triggerBroEffect('Damijan')" class="w-full bg-cyan-600/30 hover:bg-cyan-600 text-cyan-300 hover:text-white text-xs py-1.5 rounded-xl border border-cyan-500/40 font-bold active:scale-95 transition">V8 Motor ⚙️</button>
+                </div>
+                <!-- Samuel: Flugzeug -->
+                <div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-4 text-center space-y-2">
+                    <div class="w-12 h-12 mx-auto bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center font-bold text-lg border border-emerald-500/30">S</div>
+                    <h4 class="font-bold text-white">Samuel</h4>
+                    <p class="text-xs text-slate-400">Tierfreund & Erfinder</p>
+                    <button onclick="triggerBroEffect('Samuel')" class="w-full bg-emerald-600/30 hover:bg-emerald-600 text-emerald-300 hover:text-white text-xs py-1.5 rounded-xl border border-emerald-500/40 font-bold active:scale-95 transition">Flugzeug ✈️</button>
+                </div>
+                <!-- Benjamin: Hase -->
+                <div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-4 text-center space-y-2">
+                    <div class="w-12 h-12 mx-auto bg-amber-500/20 text-amber-400 rounded-full flex items-center justify-center font-bold text-lg border border-amber-500/30">B</div>
+                    <h4 class="font-bold text-white">Benjamin</h4>
+                    <p class="text-xs text-slate-400">Zukunfts-Pilot</p>
+                    <button onclick="triggerBroEffect('Benjamin')" class="w-full bg-amber-600/30 hover:bg-amber-600 text-amber-300 hover:text-white text-xs py-1.5 rounded-xl border border-amber-500/40 font-bold active:scale-95 transition">Hasen-Power 🐰</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: TIER SAFARI -->
+        <section id="safari-section" class="bg-slate-800/50 border border-slate-700 rounded-3xl p-4 sm:p-6 space-y-4">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div>
+                    <h3 class="text-lg sm:text-xl font-bold text-white flex items-center space-x-2">
+                        <i class="fas fa-paw text-emerald-400"></i>
+                        <span>Tier-Safari mit Soundeffekten 🔊</span>
+                    </h3>
+                    <p class="text-xs text-slate-400">Tippe auf das Feld für neue Tiere & Sounds!</p>
+                </div>
+                <div class="flex flex-wrap gap-1.5">
+                    <button onclick="addAnimal('loewe')" class="bg-slate-700 hover:bg-emerald-600 text-xs px-2.5 py-1.5 rounded-xl border border-slate-600 text-white font-bold transition">🦁 Löwe</button>
+                    <button onclick="addAnimal('hund')" class="bg-slate-700 hover:bg-emerald-600 text-xs px-2.5 py-1.5 rounded-xl border border-slate-600 text-white font-bold transition">🐶 Hund</button>
+                    <button onclick="addAnimal('hase')" class="bg-slate-700 hover:bg-emerald-600 text-xs px-2.5 py-1.5 rounded-xl border border-slate-600 text-white font-bold transition">🐰 Hase</button>
+                    <button onclick="addAnimal('delphin')" class="bg-slate-700 hover:bg-emerald-600 text-xs px-2.5 py-1.5 rounded-xl border border-slate-600 text-white font-bold transition">🐬 Delphin</button>
+                    <button onclick="resetAnimals()" class="bg-rose-600/80 hover:bg-rose-600 text-xs px-3 py-1.5 rounded-xl border border-rose-500 text-white font-bold transition">🧹 Reset</button>
+                </div>
+            </div>
+
+            <div class="w-full h-80 bg-emerald-950/80 rounded-2xl overflow-hidden border border-emerald-800 relative cursor-pointer">
+                <canvas id="safariCanvas"></canvas>
+            </div>
+        </section>
+
+        <!-- SECTION: SPORT ARENA -->
+        <section id="sport-section" class="bg-slate-800/50 border border-slate-700 rounded-3xl p-4 sm:p-6 space-y-4">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div>
+                    <h3 class="text-lg sm:text-xl font-bold text-white flex items-center space-x-2">
+                        <i class="fas fa-trophy text-amber-400"></i>
+                        <span>Bosankic Sport-Arena</span>
+                    </h3>
+                    <p class="text-xs text-slate-400">Tippe auf das Feld, um Bälle hüpfen zu lassen!</p>
+                </div>
+                <div class="flex flex-wrap gap-1.5">
+                    <button onclick="setSport('fussball')" class="bg-slate-700 hover:bg-amber-600 text-xs px-2.5 py-1.5 rounded-xl border border-slate-600 text-white font-bold transition">⚽ Fußball</button>
+                    <button onclick="setSport('basketball')" class="bg-slate-700 hover:bg-amber-600 text-xs px-2.5 py-1.5 rounded-xl border border-slate-600 text-white font-bold transition">🏀 Basketball</button>
+                    <button onclick="setSport('tennis')" class="bg-slate-700 hover:bg-amber-600 text-xs px-2.5 py-1.5 rounded-xl border border-slate-600 text-white font-bold transition">🎾 Tennis</button>
+                    <button onclick="resetSport()" class="bg-rose-600/80 hover:bg-rose-600 text-xs px-3 py-1.5 rounded-xl border border-rose-500 text-white font-bold transition">🧹 Reset</button>
+                </div>
+            </div>
+            
+            <div class="w-full h-80 bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 relative cursor-pointer">
+                <canvas id="sportCanvas"></canvas>
+            </div>
+        </section>
+
+        <!-- SECTION: KI LERNEN & ZUKUNFTS-TRÄUME -->
+        <section id="ki-section" class="bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 border border-blue-800/50 rounded-3xl p-4 sm:p-6 space-y-6">
+            <div class="space-y-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-cyan-400 bg-cyan-950/80 px-3 py-1 rounded-full border border-cyan-800">
+                    💡 KI macht deine Träume wahr
+                </span>
+                <h3 class="text-xl sm:text-2xl font-black text-white">
+                    Heute KI & Programmieren lernen ➔ Morgen deine Träume leben!
+                </h3>
+            </div>
+
+            <div class="w-full h-80 bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 relative">
+                <canvas id="kiCanvas"></canvas>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <button onclick="setKIMode('code')" class="p-3 bg-slate-800/80 hover:bg-cyan-900/40 rounded-2xl border border-slate-700 hover:border-cyan-500 text-left font-bold transition">
+                    <div class="text-xl mb-1">💻</div>
+                    <div class="text-xs text-white">1. KI Coden</div>
+                    <div class="text-[10px] text-slate-400 font-normal">Programmieren lernen</div>
+                </button>
+                <button onclick="setKIMode('plane')" class="p-3 bg-slate-800/80 hover:bg-sky-900/40 rounded-2xl border border-slate-700 hover:border-sky-500 text-left font-bold transition">
+                    <div class="text-xl mb-1">✈️</div>
+                    <div class="text-xs text-white">2. Flugzeug Fliegen</div>
+                    <div class="text-[10px] text-slate-400 font-normal">Über die Wolken düsen</div>
+                </button>
+                <button onclick="setKIMode('vacation')" class="p-3 bg-slate-800/80 hover:bg-amber-900/40 rounded-2xl border border-slate-700 hover:border-amber-500 text-left font-bold transition">
+                    <div class="text-xl mb-1">🌴</div>
+                    <div class="text-xs text-white">3. Traumurlaub</div>
+                    <div class="text-[10px] text-slate-400 font-normal">Strand & Erholung</div>
+                </button>
+                <button onclick="setKIMode('space')" class="p-3 bg-slate-800/80 hover:bg-purple-900/40 rounded-2xl border border-slate-700 hover:border-purple-500 text-left font-bold transition">
+                    <div class="text-xl mb-1">🚀</div>
+                    <div class="text-xs text-white">4. KI-Raumschiff</div>
+                    <div class="text-[10px] text-slate-400 font-normal">Sterne & Weltraum</div>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MOBILE BOTTOM NAVIGATION BAR FOR HANDY RESPONSIVE DESIGN -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 z-50 px-2 py-2.5">
+        <div class="flex justify-around items-center text-slate-400 text-[10px]">
+            <a href="#safari-section" class="flex flex-col items-center hover:text-cyan-400">
+                <i class="fas fa-paw text-base mb-0.5"></i>
+                <span>Safari</span>
+            </a>
+            <a href="#sport-section" class="flex flex-col items-center hover:text-cyan-400">
+                <i class="fas fa-basketball-ball text-base mb-0.5"></i>
+                <span>Sport</span>
+            </a>
+            <a href="#ki-section" class="flex flex-col items-center hover:text-cyan-400">
+                <i class="fas fa-brain text-base mb-0.5"></i>
+                <span>KI Träume</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- JAVASCRIPT ANIMATIONS & LOGIC -->
+    <script>
+        let isAudioMuted = true;
+        let audioCtx = null;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+            }
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+            return audioCtx;
+        }
+
+        function toggleMute() {
+            isAudioMuted = !isAudioMuted;
+            const icon = document.getElementById('muteIcon');
+            const text = document.getElementById('muteText');
+            if (isAudioMuted) {
+                icon.className = 'fas fa-volume-mute text-red-400';
+                text.innerText = 'Ton: AUS';
+            } else {
+                getAudioContext();
+                icon.className = 'fas fa-volume-up text-emerald-400';
+                text.innerText = 'Ton: AN';
+            }
+        }
+
+        // SPEZIFISCHE POWER-UP ANIMATIONEN (HAUPT-CANVAS)
+        const powerCanvas = document.getElementById('powerCanvas');
+        const powerCtx = powerCanvas.getContext('2d');
+        let activePowerType = null;
+        let powerObjects = [];
+
+        function resizePowerCanvas() {
+            powerCanvas.width = window.innerWidth;
+            powerCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizePowerCanvas);
+        resizePowerCanvas();
+
+        class PowerAnimationItem {
+            constructor(type) {
+                this.type = type;
+                this.x = Math.random() * powerCanvas.width;
+                this.y = powerCanvas.height + 60;
+                this.vx = (Math.random() - 0.5) * 6;
+                this.vy = -Math.random() * 10 - 5;
+                this.gravity = 0.35;
+                this.size = Math.random() * 20 + 40;
+
+                if (type === 'bunny') this.symbol = Math.random() > 0.4 ? '🐰' : '🥕';
+                else if (type === 'car') this.symbol = Math.random() > 0.3 ? '🏎️' : '💨';
+                else if (type === 'motor') this.symbol = Math.random() > 0.3 ? '⚙️' : '🔥';
+                else if (type === 'plane') this.symbol = Math.random() > 0.3 ? '✈️' : '☁️';
+            }
+            update() {
+                this.vy += this.gravity;
+                this.x += this.vx;
+                this.y += this.vy;
+            }
+            draw() {
+                powerCtx.font = `${this.size}px sans-serif`;
+                powerCtx.textAlign = 'center';
+                powerCtx.fillText(this.symbol, this.x, this.y);
+            }
+        }
+
+        function triggerBroEffect(name) {
+            confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+
+            const modal = document.getElementById('dreamModal');
+            const emoji = document.getElementById('modalEmoji');
+            const title = document.getElementById('modalTitle');
+            const desc = document.getElementById('modalDesc');
+
+            powerCanvas.style.display = 'block';
+            powerObjects = [];
+
+            if (name === 'Petar') {
+                emoji.innerText = '🏎️💨🏆';
+                title.innerText = 'Petar\'s Sportauto Power!';
+                desc.innerText = 'Petar baut mit KI das schnellste Rennauto der Welt und rast als Erster über die Ziellinie!';
+                activePowerType = 'car';
+            } else if (name === 'Damijan') {
+                emoji.innerText = '⚙️🔥🚀';
+                title.innerText = 'Damijan\'s V8 Motor Power!';
+                desc.innerText = 'Damijan programmiert einen mega starken KI-Motor mit unendlicher Power und Turbo-Antrieb!';
+                activePowerType = 'motor';
+            } else if (name === 'Samuel') {
+                emoji.innerText = '✈️☁️🌍';
+                title.innerText = 'Samuel\'s Flugzeug Power!';
+                desc.innerText = 'Samuel steuert sein eigenes Überschall-Flugzeug hoch oben über den Wolken!';
+                activePowerType = 'plane';
+            } else if (name === 'Benjamin') {
+                emoji.innerText = '🐰🥕✨';
+                title.innerText = 'Benjamin\'s Hasen Power!';
+                desc.innerText = 'Benjamin liebt Hasen über alles! Alle Hoppelhasen feiern heute mit dir eine riesige Party!';
+                activePowerType = 'bunny';
+            }
+
+            for (let i = 0; i < 30; i++) {
+                powerObjects.push(new PowerAnimationItem(activePowerType));
+            }
+
+            setTimeout(() => {
+                activePowerType = null;
+                powerCanvas.style.display = 'none';
+            }, 4500);
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('dreamModal').classList.add('hidden');
+        }
+
+        function animatePowerCanvas() {
+            if (activePowerType) {
+                powerCtx.clearRect(0, 0, powerCanvas.width, powerCanvas.height);
+                powerObjects.forEach(obj => {
+                    obj.update();
+                    obj.draw();
+                });
+            }
+            requestAnimationFrame(animatePowerCanvas);
+        }
+        animatePowerCanvas();
+
+        function resizeCanvas(canvas) {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+
+        // --- SAFARI ANIMATION ---
+        const safariCanvas = document.getElementById('safariCanvas');
+        const safariCtx = safariCanvas.getContext('2d');
+        let activeAnimalType = 'loewe';
+        let safariList = [];
+
+        class DynamicAnimal {
+            constructor(x, y, type) {
+                this.x = x; this.y = y; this.type = type;
+                this.emoji = type === 'loewe' ? '🦁' : type === 'hund' ? '🐶' : type === 'hase' ? '🐰' : '🐬';
+                this.vx = (Math.random() - 0.5) * 4 || 2;
+                this.vy = (Math.random() - 0.5) * 4 || -2;
+            }
+            move(w, h) {
+                this.x += this.vx; this.y += this.vy;
+                if (this.x < 30 || this.x > w - 30) this.vx *= -1;
+                if (this.y < 30 || this.y > h - 30) this.vy *= -1;
+            }
+            draw(ctx) {
+                ctx.font = '42px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(this.emoji, this.x, this.y);
+            }
+        }
+
+        function addAnimal(type) {
+            activeAnimalType = type;
+            const w = safariCanvas.width || 300;
+            const h = safariCanvas.height || 200;
+            safariList.push(new DynamicAnimal(w / 2, h / 2, type));
+            if (safariList.length > 15) safariList.shift();
+        }
+
+        function resetAnimals() { safariList = []; }
+
+        safariCanvas.addEventListener('pointerdown', (e) => {
+            const rect = safariCanvas.getBoundingClientRect();
+            safariList.push(new DynamicAnimal(e.clientX - rect.left, e.clientY - rect.top, activeAnimalType));
+            if (safariList.length > 15) safariList.shift();
+        });
+
+        function renderSafari() {
+            resizeCanvas(safariCanvas);
+            const w = safariCanvas.width;
+            const h = safariCanvas.height;
+
+            safariCtx.fillStyle = '#064e3b';
+            safariCtx.fillRect(0, 0, w, h);
+
+            safariList.forEach(animal => {
+                animal.move(w, h);
+                animal.draw(safariCtx);
+            });
+
+            requestAnimationFrame(renderSafari);
+        }
+
+        setTimeout(() => {
+            resizeCanvas(safariCanvas);
+            safariList.push(new DynamicAnimal(100, 100, 'loewe'));
+        }, 100);
+        renderSafari();
+
+        // --- SPORT ANIMATION ---
+        const sportCanvas = document.getElementById('sportCanvas');
+        const sportCtx = sportCanvas.getContext('2d');
+        let sportBalls = [];
+        let currentSport = 'fussball';
+
+        class Ball {
+            constructor(x, y, type) {
+                this.x = x; this.y = y; this.type = type;
+                this.radius = 24;
+                this.vx = (Math.random() - 0.5) * 6;
+                this.vy = -Math.random() * 5 - 2;
+                this.gravity = 0.3;
+                this.bounce = 0.8;
+                this.emoji = type === 'fussball' ? '⚽' : type === 'basketball' ? '🏀' : '🎾';
+            }
+            update(w, h) {
+                this.vy += this.gravity;
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.y + this.radius > h) {
+                    this.y = h - this.radius;
+                    this.vy *= -this.bounce;
+                }
+                if (this.x - this.radius < 0 || this.x + this.radius > w) {
+                    this.vx *= -1;
+                }
+            }
+            draw(ctx) {
+                ctx.font = '40px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(this.emoji, this.x, this.y);
+            }
+        }
+
+        function setSport(type) { 
+            currentSport = type; 
+            const w = sportCanvas.width || 300;
+            sportBalls.push(new Ball(w / 2, 60, type));
+        }
+
+        function resetSport() { sportBalls = []; }
+
+        sportCanvas.addEventListener('pointerdown', (e) => {
+            const rect = sportCanvas.getBoundingClientRect();
+            sportBalls.push(new Ball(e.clientX - rect.left, e.clientY - rect.top, currentSport));
+            if (sportBalls.length > 20) sportBalls.shift();
+        });
+
+        function animateSport() {
+            resizeCanvas(sportCanvas);
+            const w = sportCanvas.width;
+            const h = sportCanvas.height;
+
+            sportCtx.fillStyle = '#0f172a';
+            sportCtx.fillRect(0, 0, w, h);
+
+            sportBalls.forEach(b => {
+                b.update(w, h);
+                b.draw(sportCtx);
+            });
+
+            requestAnimationFrame(animateSport);
+        }
+
+        setTimeout(() => {
+            resizeCanvas(sportCanvas);
+            sportBalls.push(new Ball(sportCanvas.width / 2, 60, 'fussball'));
+        }, 100);
+        animateSport();
+
+        // --- KI ANIMATIONEN ---
+        const kiCanvas = document.getElementById('kiCanvas');
+        const kiCtx = kiCanvas.getContext('2d');
+        let kiMode = 'plane';
+        let planeFrame = 0;
+
+        function setKIMode(mode) { kiMode = mode; }
+
+        function animateKI() {
+            resizeCanvas(kiCanvas);
+            const w = kiCanvas.width;
+            const h = kiCanvas.height;
+            planeFrame++;
+
+            if (kiMode === 'code') {
+                kiCtx.fillStyle = '#020617';
+                kiCtx.fillRect(0, 0, w, h);
+                kiCtx.fillStyle = '#38bdf8';
+                kiCtx.font = '16px monospace';
+                kiCtx.textAlign = 'center';
+                kiCtx.textBaseline = 'middle';
+                kiCtx.fillText('if (ki.learn() === "Träume") { win(); }', w / 2, h / 2 - 15);
+                kiCtx.fillStyle = '#94a3b8';
+                kiCtx.font = '13px sans-serif';
+                kiCtx.fillText('// Petar, Damijan, Samuel & Benjamin', w / 2, h / 2 + 20);
+
+            } else if (kiMode === 'plane') {
+                kiCtx.fillStyle = '#0369a1';
+                kiCtx.fillRect(0, 0, w, h);
+
+                kiCtx.font = '30px sans-serif';
+                const cloudX1 = (planeFrame * 0.5) % (w + 100) - 50;
+                const cloudX2 = (planeFrame * 0.8 + 200) % (w + 100) - 50;
+                kiCtx.fillText('☁️', cloudX1, h * 0.25);
+                kiCtx.fillText('☁️', cloudX2, h * 0.65);
+
+                const planeX = (planeFrame * 2) % (w + 120) - 60;
+                const planeY = h / 2 + Math.sin(planeFrame * 0.05) * 30;
+
+                kiCtx.fillStyle = '#7dd3fc';
+                kiCtx.font = '14px sans-serif';
+                kiCtx.fillText('✨ KI-Power', planeX - 60, planeY + 5);
+
+                kiCtx.font = '55px sans-serif';
+                kiCtx.textAlign = 'center';
+                kiCtx.textBaseline = 'middle';
+                kiCtx.fillText('✈️', planeX, planeY);
+
+            } else if (kiMode === 'vacation') {
+                kiCtx.fillStyle = '#0284c7';
+                kiCtx.fillRect(0, 0, w, h);
+
+                kiCtx.fillStyle = '#fde047';
+                kiCtx.beginPath();
+                kiCtx.ellipse(w / 2, h + 20, w * 0.7, 90, 0, 0, Math.PI * 2);
+                kiCtx.fill();
+
+                const sunY = h * 0.2 + Math.sin(planeFrame * 0.03) * 5;
+                kiCtx.font = '50px sans-serif';
+                kiCtx.textAlign = 'center';
+                kiCtx.fillText('☀️', w * 0.8, sunY);
+
+                kiCtx.font = '50px sans-serif';
+                kiCtx.fillText('🌴', w * 0.2, h - 50);
+                kiCtx.fillText('🌴', w * 0.8, h - 50);
+                kiCtx.fillText('🏖️', w * 0.5, h - 45);
+
+            } else if (kiMode === 'space') {
+                kiCtx.fillStyle = '#090514';
+                kiCtx.fillRect(0, 0, w, h);
+
+                kiCtx.fillStyle = '#ffffff';
+                for (let i = 0; i < 15; i++) {
+                    const sx = (i * 70 + planeFrame * 2) % w;
+                    const sy = (i * 40) % h;
+                    kiCtx.fillRect(sx, sy, 2, 2);
+                }
+
+                const rocketX = w / 2 + Math.sin(planeFrame * 0.04) * 40;
+                const rocketY = h / 2 + Math.cos(planeFrame * 0.04) * 20;
+
+                kiCtx.font = '60px sans-serif';
+                kiCtx.textAlign = 'center';
+                kiCtx.textBaseline = 'middle';
+                kiCtx.fillText('🚀', rocketX, rocketY);
+                kiCtx.font = '25px sans-serif';
+                kiCtx.fillText('🪐', w * 0.2, h * 0.3);
+                kiCtx.fillText('🌟', w * 0.8, h * 0.7);
+            }
+
+            requestAnimationFrame(animateKI);
+        }
+        animateKI();
+    </script>
+</body>
+</html>
